@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="乗りたい日を入れるだけで、JAL・ANAの特典航空券の予約開始日（ANA 355日前 9:00〜／JAL 360日前 0:00〜）がわかります。">
-<meta property="og:title" content="JAL/ANA 予約開始日チェッカー">
+<meta property="og:title" content="JAL/ANA 予約開始日確認ツール">
 <meta property="og:description" content="乗りたい日を入れるだけで、JAL・ANAの特典航空券の予約開始日がわかります。">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#13448f">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2313448f'/%3E%3Cpath d='M14 38l36-14-8 22-8-6-6 8-2-10z' fill='white'/%3E%3C/svg%3E">
-<title>JAL/ANA 予約開始日チェッカー</title>
+<title>JAL/ANA 予約開始日確認ツール</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -54,7 +54,8 @@ html, body { margin: 0; }
 html { overflow-y: scroll; scrollbar-gutter: stable; }
 body { background: var(--bg); color: var(--ink); font-family: var(--font); line-height: 1.6; font-size: 16px; }
 .wrap { max-width: 520px; margin: 0 auto; padding: 28px 16px 40px; display: grid; gap: 18px; }
-h1 { margin: 0; font-size: 1.4rem; text-wrap: balance; }
+h1 { margin: 0; font-size: clamp(1.15rem, 5.2vw, 1.4rem); line-height: 1.35; }
+.nw { display: inline-block; white-space: nowrap; }
 .lead { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
 
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 16px; }
@@ -103,8 +104,8 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid 
 <body>
 <div class="wrap">
   <header>
-    <h1>JAL/ANA 予約開始日チェッカー</h1>
-    <p class="lead">乗りたい日を入れると、予約できる日がわかります。</p>
+    <h1><span class="nw">JAL/ANA</span> <span class="nw">予約開始日確認ツール</span></h1>
+    <p class="lead"><span class="nw">乗りたい日を入れると、</span><span class="nw">予約できる日がわかります。</span></p>
   </header>
 
   <section class="card" aria-label="条件">
