@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="乗りたい日を入れるだけで、JAL・ANAの特典航空券の予約開始日（ANA 355日前 9:00〜／JAL 360日前 0:00〜）がわかります。">
+<meta property="og:title" content="JAL/ANA 予約開始日チェッカー">
+<meta property="og:description" content="乗りたい日を入れるだけで、JAL・ANAの特典航空券の予約開始日がわかります。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#13448f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2313448f'/%3E%3Cpath d='M14 38l36-14-8 22-8-6-6 8-2-10z' fill='white'/%3E%3C/svg%3E">
+<title>JAL/ANA 予約開始日チェッカー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one narrow column. Three plain choices, then one big answer card. */
+:root {
+  --bg: #eef1f4;
+  --panel: #ffffff;
+  --ink: #14202e;
+  --muted: #5e6b7a;
+  --line: #d5dce4;
+  --ana: #13448f;
+  --jal: #c8102e;
+  --brand: var(--ana);
+  --good: #137a4a;
+  --good-soft: #e2f3ea;
+  --font: "IBM Plex Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d141c; --panel: #151f2b; --ink: #e6edf4; --muted: #98a6b6; --line: #2c3949;
+    --ana: #7fa8ea; --jal: #ff6b80; --good: #5fd39a; --good-soft: #163226;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d141c; --panel: #151f2b; --ink: #e6edf4; --muted: #98a6b6; --line: #2c3949;
+  --ana: #7fa8ea; --jal: #ff6b80; --good: #5fd39a; --good-soft: #163226;
+  color-scheme: dark;
+}
+body { --deep: #13448f; }
+body.jal { --brand: var(--jal); --deep: #c8102e; }
+body { background: color-mix(in srgb, var(--brand) 10%, var(--bg)) !important; transition: background-color .3s; }
+header { background: var(--deep); color: #fff; border-radius: 14px; padding: 18px 18px 16px; transition: background-color .3s; }
+header .lead { color: rgba(255,255,255,.85); }
+.card { border-color: color-mix(in srgb, var(--brand) 30%, var(--line)); }
+.fine { color: color-mix(in srgb, var(--brand) 35%, var(--muted)); }
+@media (prefers-reduced-motion: reduce) { body, header { transition: none; } }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); line-height: 1.6; font-size: 16px; }
+.wrap { max-width: 520px; margin: 0 auto; padding: 28px 16px 40px; display: grid; gap: 18px; }
+h1 { margin: 0; font-size: 1.4rem; text-wrap: balance; }
+.lead { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 16px; }
+.q { display: grid; gap: 6px; }
+.q > .t { font-size: .85rem; font-weight: 500; color: var(--muted); }
+input[type="date"] { -webkit-appearance: none; appearance: none; display: block; font: 500 1.2rem/1.4 var(--font); font-variant-numeric: tabular-nums; letter-spacing: .02em; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 0 12px; height: 52px; width: 100%; min-width: 0; text-align: left; }
+input[type="date"]::-webkit-date-and-time-value { text-align: left; margin: 0; line-height: 52px; }
+input[type="date"]::-webkit-datetime-edit { padding: 0; line-height: 1.4; }
+input[type="date"]::-webkit-datetime-edit-fields-wrapper { padding: 0; }
+input[type="date"]::-webkit-datetime-edit-text { color: var(--muted); opacity: .6; }
+.dwrap { position: relative; }
+.ph { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font: 500 1.2rem/1 var(--font); color: var(--muted); opacity: .6; pointer-events: none; display: none; }
+.dwrap:has(input.empty:not(:focus)) .ph { display: block; }
+input[type="date"].empty:not(:focus), input[type="date"].empty:not(:focus)::-webkit-datetime-edit, input[type="date"].empty:not(:focus)::-webkit-datetime-edit-text, input[type="date"].empty:not(:focus)::-webkit-datetime-edit-year-field, input[type="date"].empty:not(:focus)::-webkit-datetime-edit-month-field, input[type="date"].empty:not(:focus)::-webkit-datetime-edit-day-field { color: transparent; }
+input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .7; }
+.answer .date, .far-d { font-feature-settings: "palt"; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.seg button { font: 700 1rem var(--font); padding: 12px; border-radius: 10px; border: 2px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; }
+.seg button[aria-pressed="true"] { border-color: var(--brand); color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, var(--panel)); }
+.seg button.ana[aria-pressed="true"] { border-color: var(--ana); color: var(--ana); background: color-mix(in srgb, var(--ana) 8%, var(--panel)); }
+.seg button.jal[aria-pressed="true"] { border-color: var(--jal); color: var(--jal); background: color-mix(in srgb, var(--jal) 8%, var(--panel)); }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; }
+
+.answer { background: var(--panel); border: 2px solid var(--brand); border-radius: 14px; padding: 22px 18px; display: grid; gap: 6px; text-align: center; }
+.answer .k { font-size: .9rem; color: var(--muted); }
+.answer .date { font-size: 1.9rem; font-weight: 700; line-height: 1.25; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.answer .time { font-size: 1.3rem; font-weight: 700; color: var(--brand); }
+.pill { justify-self: center; margin-top: 6px; font-weight: 700; font-size: 1rem; padding: 6px 16px; border-radius: 999px; background: color-mix(in srgb, var(--brand) 12%, var(--panel)); color: var(--brand); font-variant-numeric: tabular-nums; }
+.pill.open { background: var(--good-soft); color: var(--good); }
+.cal { justify-self: center; margin-top: 4px; font-size: .9rem; color: var(--brand); }
+.ret { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 12px; font-size: .95rem; }
+.ret strong { font-variant-numeric: tabular-nums; }
+
+.pre { margin-top: 8px; font-size: .82rem; color: var(--muted); text-align: center; }
+.far { text-align: center; gap: 4px; }
+.far-t { font-size: .85rem; font-weight: 500; color: var(--muted); }
+.far-d { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.far-s { font-size: .82rem; color: var(--muted); }
+.far .addret { justify-self: center; margin-top: 6px; }
+.addret { justify-self: start; font: 500 .9rem var(--font); background: none; border: none; color: var(--brand); padding: 0; cursor: pointer; text-decoration: underline; }
+.hidden { display: none !important; }
+.fine { font-size: .78rem; color: var(--muted); display: grid; gap: 4px; }
+.fine a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>JAL/ANA 予約開始日チェッカー</h1>
+    <p class="lead">乗りたい日を入れると、予約できる日がわかります。</p>
+  </header>
+
+  <section class="card" aria-label="条件">
+    <div class="q">
+      <label class="t" for="d1">乗りたい日</label>
+      <div class="dwrap">
+        <input type="date" id="d1">
+        <span class="ph" aria-hidden="true">年/月/日</span>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="t" id="lbl-air">航空会社</span>
+      <div class="seg" role="group" aria-labelledby="lbl-air">
+        <button type="button" class="jal" data-air="jal" id="b-jal">JAL</button>
+        <button type="button" class="ana" data-air="ana" id="b-ana">ANA</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="answer" id="answer" aria-live="polite"></section>
+
+  <section class="card far" aria-labelledby="far-t">
+    <div class="far-t" id="far-t">現在予約できるのは・・・</div>
+    <div class="far-d" id="far-d"></div>
+    <div class="far-s" id="far-s"></div>
+  </section>
+
+  <section class="fine">
+    <div>ANA：搭乗日の355日前の9:00〜（国内線・国際線）<br>JAL：搭乗日の360日前の0:00〜（国内線・国際線）</div>
+    <div>※ JMBダイヤモンド／JGCプレミア会員の場合、361日前の22:00〜先行予約が可能（国内線のみ）<br>時刻はすべて日本時間です。</div>
+    <div>最新の情報は公式サイトでご確認ください。</div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var JST = 9 * 3600 * 1000, DAY = 86400000;
+  var WD = ["日", "月", "火", "水", "木", "金", "土"];
+  var RULES = {
+    ana: { days: 355, h: 9, m: 0, name: "ANA 特典航空券", timeText: "9:00〜（国内線・国際線）" },
+    jal: { days: 360, h: 0, m: 0, name: "JAL 特典航空券", timeText: "0:00〜（国内線・国際線）" }
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+  function ymd(w) { var d = new Date(w); return d.getUTCFullYear() + "-" + pad(d.getUTCMonth() + 1) + "-" + pad(d.getUTCDate()); }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function parse(s) { if (!s) return null; var p = s.split("-").map(Number); return p[0] ? Date.UTC(p[0], p[1] - 1, p[2]) : null; }
+  function fmtDate(w) { var d = new Date(w); return d.getUTCFullYear() + "年" + (d.getUTCMonth() + 1) + "月" + d.getUTCDate() + "日（" + WD[d.getUTCDay()] + "）"; }
+  function fmtTime(w) { var d = new Date(w); return d.getUTCHours() + ":" + pad(d.getUTCMinutes()); }
+  function openAt(r, flight) { return flight - r.days * DAY + (r.h * 60 + r.m) * 60000; }
+  function left(open) {
+    var now = Date.now() + JST, diff = open - now;
+    if (diff <= 0) return null;
+    var nd = new Date(now), od = new Date(open);
+    var days = Math.round((Date.UTC(od.getUTCFullYear(), od.getUTCMonth(), od.getUTCDate()) -
+      Date.UTC(nd.getUTCFullYear(), nd.getUTCMonth(), nd.getUTCDate())) / DAY);
+    if (days > 0) return "あと " + days + " 日";
+    var h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000);
+    return "本日 あと " + (h ? h + " 時間 " : "") + m + " 分";
+  }
+  function calLink(r, open) {
+    var f = function (ms) { return new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); };
+    var s = open - JST;
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" +
+      encodeURIComponent(r.name + " 予約開始") + "&dates=" + f(s) + "/" + f(s + 30 * 60000);
+  }
+
+  var air = store.get("s-air") || "ana";
+
+  function setPressed() {
+    $("b-ana").setAttribute("aria-pressed", air === "ana");
+    $("b-jal").setAttribute("aria-pressed", air === "jal");
+    document.body.classList.toggle("jal", air === "jal");
+  }
+
+  function render() {
+    setPressed();
+    store.set("s-air", air);
+    store.set("s-d1", $("d1").value);
+    $("d1").classList.toggle("empty", !$("d1").value);
+    var r = RULES[air];
+    renderFar(r);
+    var f1 = parse($("d1").value);
+    var a = $("answer");
+    if (!f1) { a.innerHTML = '<div class="k">乗りたい日を入れてください</div>'; return; }
+
+    var nw = new Date(Date.now() + JST), today = Date.UTC(nw.getUTCFullYear(), nw.getUTCMonth(), nw.getUTCDate());
+    if (f1 < today) {
+      a.innerHTML = '<div class="k">' + r.name + '</div><div class="date">この日はもう過ぎています</div><div class="k">本日以降の日付を入れてください</div>';
+      return;
+    }
+    var o1 = openAt(r, f1), l1 = left(o1);
+    var html = '<div class="k">予約開始日</div>' +
+      '<div class="date">' + fmtDate(o1) + '</div>' +
+      '<div class="time">' + r.timeText + '</div>' +
+      (l1 ? '<div class="pill">' + l1 + '</div><a class="cal" href="' + calLink(r, o1) + '" target="_blank" rel="noopener">Googleカレンダーに入れる</a>'
+          : '<div class="pill open">予約可能</div>');
+
+    if (air === "jal") {
+      var pre = f1 - 361 * DAY + 22 * 3600000;
+      html += '<div class="pre">※ JMBダイヤモンド／JGCプレミア会員の場合<br><strong>' + fmtDate(pre) + ' 22:00〜</strong><br>先行予約可（国内線）</div>';
+    }
+    a.innerHTML = html;
+  }
+
+  var farDate = null;
+  function renderFar(r) {
+    var now = Date.now() + JST, nd = new Date(now);
+    var today = Date.UTC(nd.getUTCFullYear(), nd.getUTCMonth(), nd.getUTCDate());
+    var openToday = today + (r.h * 60 + r.m) * 60000;
+    var opened = now >= openToday;
+    farDate = today + (opened ? r.days : r.days - 1) * DAY;
+    $("far-d").textContent = fmtDate(farDate) + " 搭乗分まで";
+    var sub = "";
+    $("far-s").innerHTML = sub;
+  }
+
+  document.querySelectorAll("[data-air]").forEach(function (b) { b.addEventListener("click", function () { air = b.dataset.air; render(); }); });
+  ["d1"].forEach(function (id) { $(id).addEventListener("input", render); $(id).addEventListener("change", render); });
+
+  var y = new Date(Date.now() + JST).getUTCFullYear() + 1;
+  $("d1").value = store.get("s-d1") || (y + "-08-10");
+  render();
+  setInterval(render, 60000);
+})();
+</script>
+</body>
+</html>
