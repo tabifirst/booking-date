@@ -81,7 +81,7 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid 
 
 .answer { background: var(--panel); border: 2px solid var(--brand); border-radius: 14px; padding: 22px 18px; display: grid; gap: 6px; text-align: center; }
 .answer .k { font-size: .9rem; color: var(--muted); }
-.answer .date { font-size: 1.9rem; font-weight: 700; line-height: 1.25; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.answer .date { font-size: clamp(1.25rem, 6vw, 1.6rem); font-weight: 700; line-height: 1.25; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .answer .time { font-size: 1.3rem; font-weight: 700; color: var(--brand); }
 .pill { justify-self: center; margin-top: 6px; font-weight: 700; font-size: 1rem; padding: 6px 16px; border-radius: 999px; background: color-mix(in srgb, var(--brand) 12%, var(--panel)); color: var(--brand); font-variant-numeric: tabular-nums; }
 .pill.open { background: var(--good-soft); color: var(--good); }
@@ -92,7 +92,8 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid 
 .pre { margin-top: 8px; font-size: .82rem; color: var(--muted); text-align: center; }
 .far { text-align: center; gap: 4px; }
 .far-t { font-size: .85rem; font-weight: 500; color: var(--muted); }
-.far-d { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.far-d { font-size: clamp(1rem, 4.6vw, 1.15rem); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.far-u { display: block; font-size: 1rem; font-weight: 700; color: var(--brand); margin-top: 2px; }
 .far-s { font-size: .82rem; color: var(--muted); }
 .far .addret { justify-self: center; margin-top: 6px; }
 .addret { justify-self: start; font: 500 .9rem var(--font); background: none; border: none; color: var(--brand); padding: 0; cursor: pointer; text-decoration: underline; }
@@ -223,7 +224,7 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid 
     var openToday = today + (r.h * 60 + r.m) * 60000;
     var opened = now >= openToday;
     farDate = today + (opened ? r.days : r.days - 1) * DAY;
-    $("far-d").textContent = fmtDate(farDate) + " 搭乗分まで";
+    $("far-d").textContent = fmtDate(farDate) + "搭乗分まで";
     var sub = "";
     $("far-s").innerHTML = sub;
   }
